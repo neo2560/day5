@@ -1,0 +1,119 @@
+
+Go through link https://www.multichain.com/getting-started/
+Getting Started with MultiChain
+
+Create a blockchain
+multichain-util create chain1
+Blockchain default settings
+cat ~/.multichain/chain1/params.dat
+
+On Windows, the parameters file is in %APPDATA%\MultiChain\chain1\params.dat
+Initialize the blockchain, including creating the genesis block:
+multichaind chain1 -daemon
+
+Explorer to check blockchain transactions
+MultiChain/multichain-explorer
+
+
+Web demo needed for experiments
+https://github.com/MultiChain/multichain-web-demo
+
+To stop a multichain daemon
+multichain-cli chain1 stop
+
+To start multichain daemon
+multichaind chain1 -daemon
+[root@ip-172–31–..–246 chain2]# multichaind chain1 -daemon
+MultiChain 1.0.6 Daemon (latest protocol 10011)
+Starting up node…
+
+Other nodes can connect to this node
+multichaind chain1@172.31...246:6293
+Node ready.
+
+Limitations
+Only one blockchain daemon can run in one Instance (Due o dependency on common directory) and also common ports on instance
+
+Command to list addresses
+[root@ip-172–31–..–246 ~]# multichain-cli chain2 listaddresses
+{“method”:”listaddresses”,”params”:[],”id”:”75377990–1536420417",”chain_name”:”chain2"}
+[
+{
+“address” : “1HwKE1JpJddWf8ZST8GCEGcr2c3nmoJBV7F3y9”,
+“ismine” : true
+}
+]
+
+Port for other peers to connect
+params.dat:default-network-port = 6293 # Default TCP/IP port for peer-to-peer connection with other nodes.
+
+Port for applications to connect
+params.dat:default-rpc-port = 6292 # Default TCP/IP port for incoming JSON-RPC API requests.
+Remote access settings
+
+Config settings
+Add below line in config to allow access from remote system
+rpcallowip=0.0.0.0/0
+For node.js applications connecting
+
+Example: https://github.com/scoin/multichain-node
+let multichain = require(“multichain-node”)({
+port: 6282,
+host: ‘127.0.0.1’,
+user: “multichainrpc”,
+pass: “somepass”
+});
+somepass is the rpcpassword in config file
+
+rpcpassword=D2aKAsKMkKz88HtG3hyAgTS
+Grant permission to access addresses
+multichain-cli chain1 grant 15RvLxzSPWp7DVvmxjCFhQ46e4qpCuLdvqU6eZ connect
+multichain-cli chain1 grant 15RvLxzSPWp7DVvmxjCFhQ46e4qpCuLdvqU6eZ connect,send,receive
+
+Command to get total balances
+[ec2-user@ip-172–31–6–254 ~]$ multichain-cli chain1 gettotalbalances
+{“method”:”gettotalbalances”,”params”:[],”id”:”92404444–1533833513",”chain_name”:”chain1”}
+[
+{
+“name” : “taka”,
+“assetref” : “69–266–41306”,
+“qty” : 10000.00000000
+},
+{
+“name” : “rupees”,
+“assetref” : “71–265–35702”,
+“qty” : 10000.00000000
+},
+{
+“name” : “dollar”,
+“assetref” : “82–514–8717”,
+“qty” : 100.00000000
+}
+]
+Location of find config
+cat ~/.multichain/chain1/multichain.conf
+rpcuser=multichainrpc
+rpcpassword=D2KMkKz88HbT3yAgTSvMM2CM6DWr31v
+rpcallowip=0.0.0.0
+rpcallowip=34….94
+rpcallowip=172…21.80
+
+Example to issue asset and subscribe
+multichain.issue({address: “1BNoY7kNg7san5pjvKGXBQaFFxdXQjzZRAvZsg”, asset: “realycoin1”, qty: 50000, units: 0.01, details: {hello: “world”}}, (err, res) => {
+console.log(res)
+
+multichain.subscribe({“asset”: “realycoin1”});
+})
+Changes needed in commands.js
+to be added
+
+Example to Subscribe above assets
+multichain.listAssetTransactions({asset:’realycoin1'}).then(res789 => {
+console.log(res789); 
+})
+.catch(err => {
+console.log(err)
+})
+// unsubscribe does not work as of today
+1
+
